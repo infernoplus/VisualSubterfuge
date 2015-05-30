@@ -14,11 +14,9 @@
 #include <vector>
 #include <string.h>
 
-#include "display/texture/Texture.hpp"
 #include "display/shader/Program.hpp"
+#include "display/texture/Texture.hpp"
 #include "util/Tson.hpp"
-
-#define uint unsigned int
 
 namespace gls {
   class Shader {

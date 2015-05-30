@@ -15,8 +15,6 @@
 
 #include "display/texture/lodepng.h"
 
-#define uint unsigned int
-
 namespace gls {
   class Program {
   public:
@@ -37,7 +35,6 @@ namespace gls {
     std::ifstream sf(file + ".frag");
     std::stringstream bf;
     bf << sf.rdbuf();
-
     GLuint id = compileShader(bv.str(), bf.str());
     Program* program = new Program(id);
     return program;

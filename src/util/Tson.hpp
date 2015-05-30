@@ -10,11 +10,13 @@
 
 #include <fstream>
 #include <sstream>
+#include <typeinfo>
+#include <stdexcept>
 
 #include <vector>
 #include <string.h>
 
-#define uint unsigned int
+#include "util/Log.h"
 
 namespace tsn {
    
@@ -43,7 +45,7 @@ namespace tsn {
           return b;
         }
         catch(std::bad_cast exp) {
-          std::cout << "TSON Type Cast Error: bool\n";
+          cmd::log("TSON Type Cast Error: bool");
         }
       }
       return false;
@@ -56,7 +58,7 @@ namespace tsn {
           return i;
         }
         catch(std::bad_cast exp) {
-          std::cout << "TSON Type Cast Error: int\n";
+          cmd::log("TSON Type Cast Error: int");
         }
       }
       return 0;
@@ -69,7 +71,7 @@ namespace tsn {
           return f;
         }
         catch(std::bad_cast exp) {
-          std::cout << "TSON Type Cast Error: float\n";
+          cmd::log("TSON Type Cast Error: float");
         }
       }
       return 0.0f;
@@ -82,7 +84,7 @@ namespace tsn {
           return str;
         }
         catch(std::bad_cast exp) {
-          std::cout << "TSON Type Cast Error: std::string\n";
+          cmd::log("TSON Type Cast Error: std::string");
         }
       }
       return "null";
@@ -122,7 +124,7 @@ namespace tsn {
           return b;
         }
         catch(std::bad_cast exp) {
-          std::cout << "TSON Type Cast Error: bool\n";
+          cmd::log("TSON Type Cast Error: bool");
         }
       }
       return false;
@@ -136,7 +138,7 @@ namespace tsn {
           return j;
         }
         catch(std::bad_cast exp) {
-          std::cout << "TSON Type Cast Error: int\n";
+          cmd::log("TSON Type Cast Error: int");
         }
       }
       return 0;
@@ -150,7 +152,7 @@ namespace tsn {
           return f;
         }
         catch(std::bad_cast exp) {
-          std::cout << "TSON Type Cast Error: float\n";
+          cmd::log("TSON Type Cast Error: float");
         }
       }
       return 0.0f;
@@ -164,7 +166,7 @@ namespace tsn {
           return str;
         }
         catch(std::bad_cast exp) {
-          std::cout << "TSON Type Cast Error: std::string\n";
+          cmd::log("TSON Type Cast Error: std::string");
         }
       }
       return "null";

@@ -13,9 +13,8 @@
 
 #include <string.h>
 
+#include "util/Log.h"
 #include "lodepng.h"
-
-#define uint unsigned int
 
 namespace gls {
   class Texture {
@@ -45,7 +44,7 @@ namespace gls {
     // If there's an error, display it.
     if(error != 0)
     {
-      std::cout << "error " << error << ": " << lodepng_error_text(error) << std::endl;
+      cmd::log("error : " + std::string(lodepng_error_text(error)));
       exit(1);
     }
     // Texture size must be power of two for the primitive OpenGL version this is written for. Find next power of two.

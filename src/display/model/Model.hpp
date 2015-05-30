@@ -8,14 +8,13 @@
 #ifndef MODEL_HPP
 #define	MODEL_HPP
 
+
 #include <fstream>
 #include <sstream>
 
 #include <string.h>
 
 #include "display/shader/Shader.hpp"
-
-#define uint unsigned int
 
 //Documentation may be needed.
 namespace gls {
@@ -105,8 +104,8 @@ namespace gls {
     }
     fin.close();
     gls::Shader** shd = new gls::Shader*[gSize];
-    for(int i=0;i<gSize;i++) {
-      shd[i] = gls::openShader("/home/inferno/dev/VisualSubterfuge/data/basic.shader");
+    for(uint i=0;i<gSize;i++) {
+      shd[i] = gls::openShader("/home/inferno/dev/VisualSubterfuge/data/basic.shader"); //TODO: actually use shaders lol
     }
     return Model{data, dSize, indices, iSize, shd, gSize};
   }
