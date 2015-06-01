@@ -22,7 +22,13 @@ Render::~Render() {
 }
 
 bool Render::init() {
+  glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LESS);
+  glEnable(GL_CULL_FACE);
+  glCullFace(GL_BACK);
+
   initTestRender();
+
   return true;
 }
 
@@ -50,18 +56,13 @@ void Render::doTestRender() {
   r += 0.0004f;
   GLuint prg = glsModel.shaders[0]->program->program;
   glUseProgram(prg); //TODO: using first shader and nothing else
-  glEnable(GL_DEPTH_TEST);
-  glDepthMask(GL_TRUE);
-  glDepthFunc(GL_LESS);
-  glDepthRange(0.1f,128.0f);
-  glClearDepth(1.0f);
 
   GLuint uniformModel = glGetUniformLocation(prg, "model");
   GLuint uniformView = glGetUniformLocation(prg, "view");
   GLuint uniformProjection = glGetUniformLocation(prg, "projection");
   GLuint uniformMvp = glGetUniformLocation(prg, "mvp");
 
-  glm::mat4 projection = glm::perspective(70.0f, 1.0f, 1.0f, 12000.0f);
+  glm::mat4 projection = glm::perspective(70.0f, ((float)display->screenWidth)/((float)display->screenHeight), 2.0f, 16384.0f);
   glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 
   glm::vec3 eye = glm::vec3(sin(r*0.33)*4096.0f,4096.0f,cos(r*0.33)*4096.0f);
@@ -119,7 +120,6 @@ void Render::doTestRender() {
     glDisableVertexAttribArray(2);
   }
 
-  glDisable(GL_DEPTH_TEST);
   glUseProgram(0);
 }
 

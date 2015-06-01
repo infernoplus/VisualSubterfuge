@@ -12,7 +12,9 @@
 
 #include "display/Display.h"
 #include "input/Input.h"
+#include "editor/Editor.h"
 #include "util/Log.h"
+#include "util/Meme.h"
 
 class Engine {
 public:
@@ -20,12 +22,18 @@ public:
 
   Display* display;
   Input* input;
+  Editor* editor;
+
+  std::string title;
 
   Engine(int argc, char *argv[]) {
     exit = false;
+    title = rng::meme();
+
     cmd::log("Logging started...");
-    display = new Display(this); cmd::log("Display started...");
-    input = new Input(this); cmd::log("Input started...");
+    display = new Display(this); cmd::log("Display started ...");
+    input = new Input(this); cmd::log("Input started ...");
+    editor = new Editor(this); cmd::log("Editor started ...");
     cmd::log("Engine running!");
   }
   virtual ~Engine() { }
@@ -33,6 +41,7 @@ public:
   int run() {
     while(!exit) {
       input->step();
+      editor->step();
       SDL_Delay(33);
     }
     close();
@@ -41,18 +50,30 @@ public:
 
   void stop() {
     exit = true;
-    display->stop();
-    SDL_Delay(100); //Give display thread 1/10 a second to close before free memory
   }
 private:
   void close() {
-    cmd::log("Stopping engine!");
+    cmd::log("Stopping engine ...");
+    exit = true;
 
-    display->close();
+    //Close editor and display threads...
+    display->stop();
+    editor->stop();
+    while(!display->tClosed || !editor->tClosed) {
+      SDL_Delay(100); //Wait until they are done closing...
+    }
+
+    cmd::log("Closing threads ...");
+
+    editor->close();
     input->close();
+    display->close();
 
-    delete display;
+    delete editor;
     delete input;
+    delete display;
+
+    cmd::log("Exiting ...");
   }
 };
 

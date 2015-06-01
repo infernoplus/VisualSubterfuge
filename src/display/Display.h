@@ -12,14 +12,14 @@
 #include <stdio.h>
 #include <string>
 
+#include <GL/glew.h>
+#include <GL/glu.h>
+#include <GL/gl.h>
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_thread.h>
 #include <SDL2/SDL_timer.h>
-
-#include <GL/glew.h>
 #include <SDL2/SDL_opengl.h>
-#include <GL/glu.h>
-#include <GL/gl.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -34,11 +34,14 @@ public:
 	Engine* engine;
 	Render *render;
 
-	bool exit;
+	bool tExit, tClosed;
 	SDL_Thread *thread;
 
 	SDL_Window* gWindow = NULL;
 	SDL_GLContext gContext;
+
+	int screenWidth;
+	int screenHeight;
 
 	Display(Engine* e);
 	virtual ~Display();

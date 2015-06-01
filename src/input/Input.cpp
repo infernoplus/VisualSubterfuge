@@ -8,7 +8,6 @@
 #include <Engine.hpp>
 #include <input/Input.h>
 
-
 Input::Input(Engine* e) {
 	engine = e;
 	//Enable text input

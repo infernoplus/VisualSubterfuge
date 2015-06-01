@@ -8,12 +8,12 @@
 #include <Engine.hpp>
 #include <display/Display.h>
 
-const int SCREEN_WIDTH = 1024; const int SCREEN_HEIGHT = 768;
-
 Display::Display(Engine* e) {
 	engine = e;
 
-	exit = false;
+	screenWidth = 1024; screenHeight = 768;
+
+	tExit = false; tClosed = false;
     thread = SDL_CreateThread(displayWrapper, "DisplayThread", this);
 
     if (NULL == thread) {
@@ -38,7 +38,7 @@ int Display::display() {
 	int width; int height;
 	SDL_GetWindowSize(gWindow, &width, &height);
 
-	while(!exit) {
+	while(!tExit) {
 		//Render scene
 		render->render();
 
@@ -46,6 +46,7 @@ int Display::display() {
 		SDL_GL_SwapWindow( gWindow );
 		SDL_Delay(33); //TODO: what?
 	}
+	tClosed = true;
 	return 0;
 }
 
@@ -74,7 +75,7 @@ bool Display::initSDL() {
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
 
 		//Create window
-		gWindow = SDL_CreateWindow( "Lenny Engine ( ͡° ͜ʖ ͡°)", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
+		gWindow = SDL_CreateWindow( (engine->title + "  Engine").c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
 		if( gWindow == NULL )
 		{
 			printf( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
@@ -120,7 +121,7 @@ bool Display::initSDL() {
 
 void Display::stop() {
 	//Stop run
-	exit = true;
+	tExit = true;
 }
 
 void Display::close() {
