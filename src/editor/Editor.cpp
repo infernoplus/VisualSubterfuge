@@ -122,6 +122,9 @@ int Editor::create() {
   g_signal_connect(G_OBJECT(saveAs), "activate", G_CALLBACK(&Editor::fileSaveAs), fwc);
   g_signal_connect(G_OBJECT(clos), "activate", G_CALLBACK(&Editor::fileClose), fwc);
 
+  g_signal_connect(G_OBJECT(soft), "activate", G_CALLBACK(&Editor::recompSoft), engine);
+  g_signal_connect(G_OBJECT(hard), "activate", G_CALLBACK(&Editor::recompHard), engine);
+
   g_signal_connect (window, "delete_event", G_CALLBACK (&Editor::stop), NULL);
   g_signal_connect(G_OBJECT(quit), "activate", G_CALLBACK(&Editor::stop), NULL);
 
@@ -199,6 +202,14 @@ tab::Tab* Editor::getFocus(FileWidgetsCont* fwc) {
       return fwc->pg->data()[i];
   }
   return NULL;
+}
+
+void Editor::recompSoft(Engine* e) {
+
+}
+
+void Editor::recompHard(Engine* e) {
+  e->recompHard = true;
 }
 
 void Editor::stop() {

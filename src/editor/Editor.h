@@ -73,6 +73,8 @@ private:
   void fileSave(FileWidgetsCont* fwc);
   void fileSaveAs(FileWidgetsCont* fwc);
   void fileClose(FileWidgetsCont* fwc);
+  void recompSoft(Engine* e);
+  void recompHard(Engine* e);
 
   //Util
   tab::Tab* getFocus(FileWidgetsCont* fwc);

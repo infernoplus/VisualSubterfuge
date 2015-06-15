@@ -19,6 +19,7 @@
 class Engine {
 public:
   bool exit;
+  bool recompSoft, recompHard;
 
   Display* display;
   Input* input;
@@ -27,7 +28,7 @@ public:
   std::string title;
 
   Engine(int argc, char *argv[]) {
-    exit = false;
+    exit = false; recompSoft = false; recompHard = false;
     title = rng::meme();
 
     cmd::log("Logging started...");
@@ -40,6 +41,18 @@ public:
 
   int run() {
     while(!exit) {
+      if(recompHard) {
+        recompHard = false;
+        display->stop();
+        for(int i=0;i<100&&!display->tClosed;i++)
+          SDL_Delay(33);
+        if(!display->tClosed)
+          cmd::log("Something fucked up and recompile never managed to close the display. Throw an actual exception/error!"); //TODO: WHAT HE SAID!
+        display->close();
+        delete display;
+
+        display = new Display(this); cmd::log("Display started ...");
+      }
       input->step();
       editor->step();
       SDL_Delay(33);

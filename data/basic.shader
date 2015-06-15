@@ -2,7 +2,7 @@ shader : {
   name : 'basic shader',
   glsl : '/home/inferno/dev/VisualSubterfuge/data/basic',
 
-  textures : ['/home/inferno/dev/VisualSubterfuge/data/tex0.png','/home/inferno/dev/VisualSubterfuge/data/tex1.png'],
+  textures : ['/home/inferno/dev/VisualSubterfuge/data/tex2.png','/home/inferno/dev/VisualSubterfuge/data/tex1.png'],
 
   uniforms : {
     color : [1.0f,0.1f,0.4f,1.0f],
