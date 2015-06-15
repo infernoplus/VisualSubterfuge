@@ -58,11 +58,11 @@ void Input::handleClick( unsigned char btn, int type, int x, int y ) {
 
 void Input::handleKeys( unsigned char key, int x, int y )
 {
-	//Toggle quad
-	if( key == 'q' )
-	{
-		engine->stop();
-	}
+//	//Toggle quad
+//	if( key == 'q' )
+//	{
+//		engine->stop();
+//	}
 }
 
 void Input::close() {
