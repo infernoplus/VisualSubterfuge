@@ -14,6 +14,8 @@
 #include <sstream>
 #include <fstream>
 
+#include "util/Log.h"
+
 namespace tab {
   class Tab {
   public:
@@ -69,9 +71,32 @@ namespace tab {
     std::string openFile(std::string in);
   };
 
+  class TabModelEdit : public Tab {
+  public:
+    std::string file;
+
+    char* header = new char[4];
+    uint gSize;
+    std::string* shaders; uint* sSize;
+    float** data; uint* dSize;
+    uint** indices; uint* iSize;
+
+    TabModelEdit(std::string tab, std::string header);
+    ~TabModelEdit();
+    virtual bool canSave();
+    virtual bool canSaveAs();
+    virtual void save();
+    virtual void saveAs(std::string out);
+  private:
+    void build();
+    void openModel(std::string in);
+  };
+
   Tab* openTabWelcome();
 
   Tab* openTabBasicEdit(std::string in);
+
+  Tab* openTabModelEdit(std::string in);
 
   Tab* openTabBasicNew();
 }

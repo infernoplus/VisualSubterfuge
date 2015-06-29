@@ -10,6 +10,10 @@
 
 #include <SDL2/SDL.h>
 
+#include <unistd.h>
+#include <limits.h>
+
+#include "game/Game.h"
 #include "display/Display.h"
 #include "input/Input.h"
 #include "editor/Editor.h"
@@ -21,23 +25,35 @@ public:
   bool exit;
   bool recompSoft, recompHard;
 
+  std::string title;
+  std::string root; //Working directory
+
   Display* display;
   Input* input;
   Editor* editor;
 
-  std::string title;
+  bool gameLoaded;
+  Game* game;
 
   Engine(int argc, char *argv[]) {
-    exit = false; recompSoft = false; recompHard = false;
+    exit = false; recompSoft = false; recompHard = false; gameLoaded = false;
     title = rng::meme();
 
     cmd::log("Logging started...");
+    setRoot(); cmd::log("Working directory is '" + root + "' ...");
     display = new Display(this); cmd::log("Display started ...");
     input = new Input(this); cmd::log("Input started ...");
     editor = new Editor(this); cmd::log("Editor started ...");
     cmd::log("Engine running!");
+
+    load(); cmd::log("Game loaded ...");
   }
   virtual ~Engine() { }
+
+  void load() {
+    game = new Game(this);
+    gameLoaded = true;
+  }
 
   int run() {
     while(!exit) {
@@ -65,6 +81,22 @@ public:
     exit = true;
   }
 private:
+  //TODO: WINDOWS/MAC/FREEBSD COMPATIBILITY
+  void setRoot() {
+    /**Only works on linux START**/
+    char buff[PATH_MAX];
+    ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff)-1);
+    if (len != -1) {
+      buff[len] = '\0';
+      root = std::string(buff);
+      int end = root.find_last_of('/');
+      root = root.substr(0,end);
+    }
+    else {
+      //TODO: EXCEPTION!
+    }
+    /**Only works on linux END**/
+  }
   void close() {
     cmd::log("Stopping engine ...");
     exit = true;
@@ -75,6 +107,8 @@ private:
     while(!display->tClosed || !editor->tClosed) {
       SDL_Delay(100); //Wait until they are done closing...
     }
+
+    delete game;
 
     cmd::log("Closing threads ...");
 

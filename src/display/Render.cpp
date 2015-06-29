@@ -5,13 +5,14 @@
  *      Author: inferno
  */
 
-#include <Engine.hpp>
 #include <display/Render.h>
+
+#include <Engine.hpp>
 #include <display/Display.h>
+#include <game/Game.h>
+#include <game/GameData.h>
 
 #include <dirent.h>
-
-#include "display/model/Model.hpp"
 
 Render::Render(Display* d) {
 	display = d;
@@ -27,34 +28,30 @@ bool Render::init() {
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
 
-  initTestRender();
-
   return true;
 }
 
-gls::Model glsModel;
-GLuint* vbo;
-GLuint vba;
-
 void Render::initTestRender() {
-  cmd::log("Loading test model...");
-  std::string in = "/home/inferno/out.gls";
-  glsModel = gls::openModel(in);
-  glGenVertexArrays(1, &vba);
-  glBindVertexArray(vba);
-  vbo = new GLuint[glsModel.gSize];
-  glGenBuffers(glsModel.gSize, vbo);
-  for(uint i=0;i<glsModel.gSize;i++) {
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[i]);
-    glBufferData(GL_ARRAY_BUFFER, glsModel.dSize[i]*sizeof(float), glsModel.data[i], GL_STATIC_DRAW);
-  }
-  cmd::log("Done...");
+ //kill me
 }
 
 float r = 0.0f;
 void Render::doTestRender() {
+  //What are we rendering?
+  if(!display->engine->gameLoaded) {
+    cmd::log("Fuck the police? (THIS IS BAD)");
+    return;
+  }
+
+  //Bind any new stuff
+  display->engine->game->data->bindData();
+
+  //Get what we need to render
+  std::vector<gls::Model*> models = display->engine->game->getDraw();
   r += 0.0004f;
-  GLuint prg = glsModel.shaders[0]->program->program;
+
+  //Render a thing
+  GLuint prg = models[0]->shaders[0]->program->program;
   glUseProgram(prg); //TODO: using first shader and nothing else
 
   GLuint uniformModel = glGetUniformLocation(prg, "model");
@@ -80,10 +77,10 @@ void Render::doTestRender() {
 
   glUniformMatrix4fv(uniformMvp, 1, GL_FALSE, glm::value_ptr(mvp));
 
-  glsModel.shaders[0]->textures[0]->bind(prg, 0);
+  models[0]->shaders[0]->textures[0]->bind(prg, 0);
 
-  for(uint i=0;i<glsModel.gSize;i++) {
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[i]);
+  for(uint i=0;i<models[0]->gSize;i++) {
+    glBindBuffer(GL_ARRAY_BUFFER, models[0]->vbo[i]);
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(
@@ -113,7 +110,7 @@ void Render::doTestRender() {
             (void*)24
     );
 
-    glDrawElements(GL_TRIANGLES, glsModel.iSize[i], GL_UNSIGNED_INT, glsModel.indices[i]);
+    glDrawElements(GL_TRIANGLES, models[0]->iSize[i], GL_UNSIGNED_INT, models[0]->indices[i]);
 
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);

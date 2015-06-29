@@ -151,7 +151,17 @@ void Editor::fileOpen(FileWidgetsCont* fwc) {
     {
       char *filename;
       filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (fwc->fo));
-      tab::Tab* tab = tab::openTabBasicEdit(std::string(filename));
+
+      std::string path = std::string(filename);
+      int end = path.find_last_of('.');
+      std::string type = path.substr(end, path.length());
+
+      tab::Tab* tab;
+      if(type == ".gls")
+        tab = tab::openTabModelEdit(path);
+      else
+        tab = tab::openTabBasicEdit(path);
+
       gtk_notebook_append_page (fwc->nb, tab->frame, tab->label);
       fwc->pg->push_back(tab);
       g_free (filename);

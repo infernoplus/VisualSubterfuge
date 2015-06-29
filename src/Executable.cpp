@@ -18,3 +18,12 @@ int main(int argc, char *argv[]) {
 
 
 //TODO: refactor includes, focus on including apis to the cpp. Stuff like log.h can be re-re-refactored lol.
+//TODO: EXCEPTIONS
+
+//TODO: gls is a populatd namespace aaaaaaaaaaaaaaaaaaaaaaa
+
+//TODO: ADD SAVE TO MODEL EDITING
+
+//TODO: IMPROVE EDITOR
+
+//TODO: USE ACTUAL SHADERS IN FILE

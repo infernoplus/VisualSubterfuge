@@ -1,45 +1,29 @@
-/* 
+/*
  * PngTexture loader
  * Author: pat
  *
  * Created on May 11, 2015, 2:49 PM
  */
 
-#ifndef TEXTURE_HPP
-#define	TEXTURE_HPP
+#include <display/texture/Texture.h>
 
-#include <fstream>
-#include <sstream>
+#include <game/GameData.h>
 
-#include <string.h>
+  gls::Texture::Texture(std::string path) {
+    this->path = path;
+    this->texId = 0;
+    bound = false;
+  }
+  gls::Texture::Texture() { }
 
-#include "util/Log.h"
-#include "lodepng.h"
-
-namespace gls {
-  class Texture {
-  public:
-    Texture(GLuint texId) {
-      this->texId=texId;
-    }
-    Texture() { }
-    void bind(int program, int id) {
-      std::stringstream ss; ss << "tex"; ss << id;
-      GLuint uniformTex = glGetUniformLocation(program, ss.str().c_str());
-          glUniform1i(uniformTex, 0);
-          glActiveTexture(GL_TEXTURE0 + id);
-      glBindTexture(GL_TEXTURE_2D, texId);
-    }
-  private:
-    GLuint texId;
-  };
-  
-  Texture* openTexture(const std::string in) {
+  void gls::Texture::bindData() {
+    if(bound)
+      return;
+    cmd::log("Binding texture '" + path + "' ...");
     // Load file and decode image.
-    GLuint texId = 0;
     std::vector<unsigned char> image;
     unsigned width, height;
-    unsigned error = lodepng::decode(image, width, height, in);
+    unsigned error = lodepng::decode(image, width, height, path);
 
     // If there's an error, display it.
     if(error != 0)
@@ -71,9 +55,19 @@ namespace gls {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, u2, v2, 0, GL_RGBA, GL_UNSIGNED_BYTE, &image2[0]);
-    Texture* tex = new Texture(texId);
+    bound = true;
+  }
+
+  void gls::Texture::bind(int program, int id) {
+    std::stringstream ss; ss << "tex"; ss << id;
+    GLuint uniformTex = glGetUniformLocation(program, ss.str().c_str());
+        glUniform1i(uniformTex, 0);
+        glActiveTexture(GL_TEXTURE0 + id);
+    glBindTexture(GL_TEXTURE_2D, texId);
+  }
+
+  gls::Texture* gls::openTexture(const std::string path, GameData* gd) {
+    Texture* tex = new Texture(path);
     return tex;
   }
-}
-#endif	/* TEXTURE_HPP */
 

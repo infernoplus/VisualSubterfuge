@@ -1,46 +1,50 @@
-/* 
+/*
  * GlsModel loader
  * Author: pat
  *
  * Created on May 11, 2015, 2:49 PM
  */
+#include <display/model/Model.h>
 
-#ifndef MODEL_HPP
-#define	MODEL_HPP
-
-
-#include <fstream>
-#include <sstream>
-
-#include <string.h>
-
-#include "display/shader/Shader.hpp"
+#include <game/GameData.h>
 
 //Documentation may be needed.
-namespace gls {
-  class Model {
-  public:
-    uint gSize;
-    gls::Shader** shaders;
-    float** data; uint* dSize;
-    uint** indices; uint* iSize;
-    Model(float** data, uint* dSize, uint** indices, uint* iSize, gls::Shader** shaders, uint gSize) {
-      this->data=data; this->dSize=dSize;
-      this->indices=indices; this->iSize=iSize;
-      this->shaders=shaders;
-      this->gSize=gSize;
-    }
-    Model() { }
-  };
+  gls::Model::Model(std::string path, float** data, uint* dSize, uint** indices, uint* iSize, gls::Shader** shaders, uint gSize) {
+    this->path = path;
+    this->data=data; this->dSize=dSize;
+    this->indices=indices; this->iSize=iSize;
+    this->shaders=shaders;
+    this->gSize=gSize;
 
-  Model openModel(const std::string in) {
+    bound = false;
+    vbo = new GLuint[0];
+    vba = 0;
+  }
+  gls::Model::Model() { }
+
+  void gls::Model::bindData() {
+    if(bound)
+      return;
+    cmd::log("Binding model '" + path + "' ...");
+    glGenVertexArrays(1, &vba);
+    glBindVertexArray(vba);
+    vbo = new GLuint[gSize];
+    glGenBuffers(gSize, vbo);
+    for(uint i=0;i<gSize;i++) {
+      glBindBuffer(GL_ARRAY_BUFFER, vbo[i]);
+      glBufferData(GL_ARRAY_BUFFER, dSize[i]*sizeof(float), data[i], GL_STATIC_DRAW);
+    }
+    cmd::log("Done...");
+  }
+
+  gls::Model* gls::openModel(const std::string path, GameData* gd) {
     char* header = new char[4];
     uint gSize;
     std::string* shaders; uint* sSize;
     float** data; uint* dSize;
     uint** indices; uint* iSize;
 
-    std::ifstream fin(in);
+    std::ifstream fin(path);
     if(fin.is_open()) {
       union { uint val; char bytes[sizeof(uint)]; } byteToUint;
       union { float val; char bytes[sizeof(float)]; } byteToFloat;
@@ -53,7 +57,7 @@ namespace gls {
         fin.get(byteToUint.bytes[i]);
       gSize = byteToUint.val;
 
-      std::cout << "Header -- " << header << " | Geom Groups -- " << gSize << "\n";
+      //std::cout << "Header -- " << header << " | Geom Groups -- " << gSize << "\n";
 
       shaders = new std::string[gSize]; sSize = new uint[gSize];
       data = new float*[gSize]; dSize = new uint[gSize];
@@ -95,7 +99,7 @@ namespace gls {
             fin.get(byteToUint.bytes[j]);
           indices[j][i] = byteToUint.val;
         }
-        std::cout << "Read Group " << j << " - data: " << dSize[j] << " - indices: " << iSize[j] << " - shader: " << shaders[j] << "\n";
+        //std::cout << "Read Group " << j << " - data: " << dSize[j] << " - indices: " << iSize[j] << " - shader: " << shaders[j] << "\n";
       }
     }
     else {
@@ -105,11 +109,8 @@ namespace gls {
     fin.close();
     gls::Shader** shd = new gls::Shader*[gSize];
     for(uint i=0;i<gSize;i++) {
-      shd[i] = gls::openShader("/home/inferno/dev/VisualSubterfuge/data/basic.shader"); //TODO: actually use shaders lol
+      shd[i] = gd->getShader("basic.shader"); //TODO: actually use shaders lol
     }
-    return Model{data, dSize, indices, iSize, shd, gSize};
+    return new Model{path, data, dSize, indices, iSize, shd, gSize};
   }
-}
-
-#endif	/* GLSMODEL_HPP */
 

@@ -19,7 +19,11 @@
 #include <vector>
 #include <string.h>
 
+#include "display/model/Model.h"
+
+class Engine;
 class Display;
+class Game;
 
 class Render {
 public:

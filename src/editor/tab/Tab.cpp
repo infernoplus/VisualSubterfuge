@@ -212,6 +212,118 @@
     /** ===================================================================================================================== **/
     /** ===================================================================================================================== **/
 
+    tab::TabModelEdit::TabModelEdit(std::string tab, std::string header) : Tab(tab, header) {
+      file = header;
+      build();
+    }
+    tab::TabModelEdit::~TabModelEdit() {
+
+    }
+    void tab::TabModelEdit::build() {
+      openModel(file);
+      GtkWidget* sbox;
+      GtkWidget* layout;
+      GtkWidget* hbox; GtkWidget* label; GtkWidget* entry;
+
+      sbox = gtk_scrolled_window_new(NULL,NULL);
+      gtk_scrolled_window_set_policy((GtkScrolledWindow*)sbox,GTK_POLICY_NEVER,GTK_POLICY_ALWAYS );
+      gtk_widget_show(sbox);
+
+      layout = gtk_layout_new(NULL,NULL);
+      gtk_widget_show(layout);
+
+      for(uint i=0;i<gSize;i++) {
+        std::string ltext = "Shader #" + std::to_string(i);
+
+        hbox = gtk_hbox_new(0,1);
+        label = gtk_label_new(ltext.c_str());
+        entry = gtk_entry_new();
+        gtk_entry_set_text((GtkEntry*)entry, shaders[i].c_str());
+        gtk_widget_show(hbox); gtk_widget_show (label); gtk_widget_show(entry);
+        gtk_container_add (GTK_CONTAINER (hbox), label);
+        gtk_container_add (GTK_CONTAINER (hbox), entry);
+        gtk_layout_put((GtkLayout*)layout, hbox, 0, i*35);
+        gtk_layout_set_size((GtkLayout*)layout, 512,(i*35)+35);
+      }
+
+      gtk_container_add (GTK_CONTAINER(sbox), layout);
+      gtk_container_add (GTK_CONTAINER (frame), sbox);
+
+    }
+    void tab::TabModelEdit::openModel(std::string in) {
+      std::ifstream fin(in);
+      if(fin.is_open()) {
+        union { uint val; char bytes[sizeof(uint)]; } byteToUint;
+        union { float val; char bytes[sizeof(float)]; } byteToFloat;
+        //Read header
+        for(uint i=0;!fin.eof()&&i<3;i++)
+          header[i] = fin.get();
+        header[3] = '\00';
+        //Read total number of geometry groups
+        for(uint i=0;!fin.eof()&&i<sizeof(uint);i++)
+          fin.get(byteToUint.bytes[i]);
+        gSize = byteToUint.val;
+
+        //std::cout << "Header -- " << header << " | Geom Groups -- " << gSize << "\n";
+
+        shaders = new std::string[gSize]; sSize = new uint[gSize];
+        data = new float*[gSize]; dSize = new uint[gSize];
+        indices = new uint*[gSize]; iSize = new uint[gSize];
+
+        for(uint j=0;j<gSize;j++) {
+          //Read size of shader name
+          for(uint i=0;!fin.eof()&&i<sizeof(uint);i++)
+            fin.get(byteToUint.bytes[i]);
+          sSize[j] = byteToUint.val;
+          //Read shader name for this geometry group
+          std::stringstream ss;
+          for(uint i=0;!fin.eof()&&i<sSize[j];i++) {
+            char ch;
+            fin.get(ch);
+            ss << ch;
+          }
+          ss << '\00';
+          shaders[j] = ss.str();
+          //Read vertex data size
+          for(uint i=0;!fin.eof()&&i<sizeof(uint);i++)
+            fin.get(byteToUint.bytes[i]);
+          dSize[j] = byteToUint.val;
+          //Read vertex data
+          data[j] = new float[dSize[j]];
+          for(uint i=0;!fin.eof()&&i<dSize[j];i++) {
+            for(uint j=0;!fin.eof()&&j<sizeof(float);j++)
+              fin.get(byteToFloat.bytes[j]);
+            data[j][i] = byteToFloat.val;
+          }
+          //Read indices data size
+          for(uint i=0;!fin.eof()&&i<sizeof(uint);i++)
+            fin.get(byteToUint.bytes[i]);
+          iSize[j] = byteToUint.val;
+          //Read indices data
+          indices[j] = new uint[iSize[j]];
+          for(uint i=0;!fin.eof()&&i<iSize[j];i++) {
+            for(uint j=0;!fin.eof()&&j<sizeof(uint);j++)
+              fin.get(byteToUint.bytes[j]);
+            indices[j][i] = byteToUint.val;
+          }
+          //std::cout << "Read Group " << j << " - data: " << dSize[j] << " - indices: " << iSize[j] << " - shader: " << shaders[j] << "\n";
+        }
+      }
+    }
+
+    bool tab::TabModelEdit::canSave() { return true; }
+    bool tab::TabModelEdit::canSaveAs() { return true; }
+
+    void tab::TabModelEdit::save() {
+
+    }
+    void tab::TabModelEdit::saveAs(std::string out) {
+
+    }
+
+    /** ===================================================================================================================== **/
+    /** ===================================================================================================================== **/
+
   tab::Tab* tab::openTabWelcome() {
     tab::TabWelcome* tab = new tab::TabWelcome("Welcome", "Visual Subterfuge Information");
     return tab;
@@ -220,6 +332,12 @@
   tab::Tab* tab::openTabBasicEdit(std::string in) {
     int start = in.find_last_of('/'); //TODO: Windows compatibility/file acsess no-no.
     tab::TabBasicEdit* tab = new tab::TabBasicEdit(in.substr(start+1, in.length()-start-1), in);
+    return tab;
+  }
+
+  tab::Tab* tab::openTabModelEdit(std::string in) {
+    int start = in.find_last_of('/'); //TODO: Windows compatibility/file acsess no-no.
+    tab::TabModelEdit* tab = new tab::TabModelEdit(in.substr(start+1, in.length()-start-1), in);
     return tab;
   }
 
