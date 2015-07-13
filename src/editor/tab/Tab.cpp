@@ -223,7 +223,8 @@
       openModel(file);
       GtkWidget* sbox;
       GtkWidget* layout;
-      GtkWidget* hbox; GtkWidget* label; GtkWidget* entry;
+      GtkWidget* hbox; GtkWidget* label;
+      entry = new GtkWidget*[gSize];
 
       sbox = gtk_scrolled_window_new(NULL,NULL);
       gtk_scrolled_window_set_policy((GtkScrolledWindow*)sbox,GTK_POLICY_NEVER,GTK_POLICY_ALWAYS );
@@ -237,11 +238,11 @@
 
         hbox = gtk_hbox_new(0,1);
         label = gtk_label_new(ltext.c_str());
-        entry = gtk_entry_new();
-        gtk_entry_set_text((GtkEntry*)entry, shaders[i].c_str());
-        gtk_widget_show(hbox); gtk_widget_show (label); gtk_widget_show(entry);
+        entry[i] = gtk_entry_new();
+        gtk_entry_set_text((GtkEntry*)entry[i], shaders[i].c_str());
+        gtk_widget_show(hbox); gtk_widget_show (label); gtk_widget_show(entry[i]);
         gtk_container_add (GTK_CONTAINER (hbox), label);
-        gtk_container_add (GTK_CONTAINER (hbox), entry);
+        gtk_container_add (GTK_CONTAINER (hbox), entry[i]);
         gtk_layout_put((GtkLayout*)layout, hbox, 0, i*35);
         gtk_layout_set_size((GtkLayout*)layout, 512,(i*35)+35);
       }
@@ -315,10 +316,138 @@
     bool tab::TabModelEdit::canSaveAs() { return true; }
 
     void tab::TabModelEdit::save() {
+      //Get shader names from UI
+      for(uint i=0;i<gSize;i++) {
+        shaders[i] = std::string(gtk_entry_get_text((GtkEntry*)entry[i]));
+      }
 
+      std::ofstream fout(file);
+
+      //Write header
+      fout << 'g'; fout << 'l'; fout << 's';
+
+      //Types
+      union { char bytes[sizeof(uint)]; uint val; } uintToByte;
+      union { char bytes[sizeof(float)]; float val; } floatToByte;
+
+      //Write number of geometry groups
+      uintToByte.val = gSize;
+      for(uint i=0;i<sizeof(uint);i++) {
+        fout << uintToByte.bytes[i];
+      }
+
+      //Write back to file
+      for(uint i=0;i<gSize;i++) {
+
+        //Write shader length
+        uintToByte.val = shaders[i].length();
+        for(uint j=0;j<sizeof(uint);j++) {
+          fout << uintToByte.bytes[j];
+        }
+
+        //Write shader
+        for(uint j=0;j<shaders[i].length();j++) {
+          fout << shaders[i].at(j);
+        }
+
+        //Write vertex data size
+        uintToByte.val = dSize[i];
+        for(uint j=0;j<sizeof(uint);j++) {
+          fout << uintToByte.bytes[j];
+        }
+
+        //Write vertex data
+        for(uint j=0;j<dSize[i];j++) {
+          floatToByte.val = data[i][j];
+          for(uint k=0;k<sizeof(float);k++) {
+            fout << floatToByte.bytes[k];
+          }
+        }
+
+        //Write indices size
+        uintToByte.val = iSize[i];
+        for(uint j=0;j<sizeof(uint);j++) {
+          fout << uintToByte.bytes[j];
+        }
+
+        //Write indices
+        for(uint j=0;j<iSize[i];j++) {
+          uintToByte.val = indices[i][j];
+          for(uint k=0;k<sizeof(uint);k++) {
+            fout << uintToByte.bytes[k];
+          }
+        }
+      }
+      fout.close();
     }
     void tab::TabModelEdit::saveAs(std::string out) {
+      //Get shader names from UI
+      for(uint i=0;i<gSize;i++) {
+        shaders[i] = std::string(gtk_entry_get_text((GtkEntry*)entry[i]));
+      }
 
+      std::ofstream fout(out);
+
+      //Write header
+      fout << 'g'; fout << 'l'; fout << 's';
+
+      //Types
+      union { char bytes[sizeof(uint)]; uint val; } uintToByte;
+      union { char bytes[sizeof(float)]; float val; } floatToByte;
+
+      //Write number of geometry groups
+      uintToByte.val = gSize;
+      for(uint i=0;i<sizeof(uint);i++) {
+        fout << uintToByte.bytes[i];
+      }
+
+      //Write back to file
+      for(uint i=0;i<gSize;i++) {
+
+        //Write shader length
+        uintToByte.val = shaders[i].length();
+        for(uint j=0;j<sizeof(uint);j++) {
+          fout << uintToByte.bytes[j];
+        }
+
+        //Write shader
+        for(uint j=0;j<shaders[i].length();j++) {
+          fout << shaders[i].at(j);
+        }
+
+        //Write vertex data size
+        uintToByte.val = dSize[i];
+        for(uint j=0;j<sizeof(uint);j++) {
+          fout << uintToByte.bytes[j];
+        }
+
+        //Write vertex data
+        for(uint j=0;j<dSize[i];j++) {
+          floatToByte.val = data[i][j];
+          for(uint k=0;k<sizeof(float);k++) {
+            fout << floatToByte.bytes[k];
+          }
+        }
+
+        //Write indices size
+        uintToByte.val = iSize[i];
+        for(uint j=0;j<sizeof(uint);j++) {
+          fout << uintToByte.bytes[j];
+        }
+
+        //Write indices
+        for(uint j=0;j<iSize[i];j++) {
+          uintToByte.val = indices[i][j];
+          for(uint k=0;k<sizeof(uint);k++) {
+            fout << uintToByte.bytes[k];
+          }
+        }
+      }
+      fout.close();
+      file = out;
+      int st = file.find_last_of('/'); //TODO: Windows compatibility/file acsess no-no.
+      gtk_label_set_text((GtkLabel*)label, file.substr(st+1, file.length()-st-1).c_str());
+      gtk_frame_set_label((GtkFrame*)frame, file.c_str());
     }
 
     /** ===================================================================================================================== **/

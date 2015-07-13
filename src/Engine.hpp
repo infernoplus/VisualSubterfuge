@@ -39,7 +39,7 @@ public:
     exit = false; recompSoft = false; recompHard = false; gameLoaded = false;
     title = rng::meme();
 
-    cmd::log("Logging started...");
+    cmd::log("Logging started for " + title + " ...");
     setRoot(); cmd::log("Working directory is '" + root + "' ...");
     display = new Display(this); cmd::log("Display started ...");
     input = new Input(this); cmd::log("Input started ...");
@@ -67,7 +67,8 @@ public:
         display->close();
         delete display;
 
-        display = new Display(this); cmd::log("Display started ...");
+        display = new Display(this); cmd::log("Display restarted ...");
+        load(); cmd::log("Game reloaded ...");
       }
       input->step();
       editor->step();

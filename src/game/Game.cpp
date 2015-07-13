@@ -21,7 +21,7 @@ Game::~Game() {
 
 
 void Game::test() {
-  testUno = data->getModel("basic.gls");
+  testUno = data->getModel("hang.gls");
   testDos = data->getModel("basic.gls");
 }
 

@@ -36,6 +36,14 @@ gls::Shader* GameData::getShader(std::string path) {
     if(shaders[i]->path == full)
       return shaders[i];
   }
+
+  std::ifstream in(full.c_str());
+  if(!in.good()) {
+    in.close();
+    return getShader("basic.shader");
+  }
+  in.close();
+
   cmd::log("Loading shader file '" + full + "' ...");
   gls::Shader* s = gls::openShader(full, this);
   shaders.push_back(s);

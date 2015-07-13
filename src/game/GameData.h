@@ -8,6 +8,8 @@
 #ifndef GAMEDATA_H_
 #define GAMEDATA_H_
 
+#include "fstream"
+
 #include "display/model/Model.h"
 #include "display/shader/Shader.h"
 #include "display/shader/Program.h"

@@ -109,7 +109,7 @@
     fin.close();
     gls::Shader** shd = new gls::Shader*[gSize];
     for(uint i=0;i<gSize;i++) {
-      shd[i] = gd->getShader("basic.shader"); //TODO: actually use shaders lol
+      shd[i] = gd->getShader(shaders[i]);
     }
     return new Model{path, data, dSize, indices, iSize, shd, gSize};
   }

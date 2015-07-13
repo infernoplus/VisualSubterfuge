@@ -51,36 +51,37 @@ void Render::doTestRender() {
   r += 0.0004f;
 
   //Render a thing
-  GLuint prg = models[0]->shaders[0]->program->program;
-  glUseProgram(prg); //TODO: using first shader and nothing else
-
-  GLuint uniformModel = glGetUniformLocation(prg, "model");
-  GLuint uniformView = glGetUniformLocation(prg, "view");
-  GLuint uniformProjection = glGetUniformLocation(prg, "projection");
-  GLuint uniformMvp = glGetUniformLocation(prg, "mvp");
-
-  glm::mat4 projection = glm::perspective(70.0f, ((float)display->screenWidth)/((float)display->screenHeight), 2.0f, 16384.0f);
-  glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
-
-  glm::vec3 eye = glm::vec3(sin(r*0.33)*4096.0f,4096.0f,cos(r*0.33)*4096.0f);
-  glm::vec3 center = glm::vec3(0.0f,0.0f,0.0f);
-  glm::vec3 up = glm::vec3(0.0f,0.0f,1.0f);
-
-  glm::mat4 view = glm::lookAt(eye, center, up);
-  glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(view));
-
-  glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f,0.0f,0.0f));
-
-  glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-
-  glm::mat4 mvp = projection * view * model;
-
-  glUniformMatrix4fv(uniformMvp, 1, GL_FALSE, glm::value_ptr(mvp));
-
-  models[0]->shaders[0]->textures[0]->bind(prg, 0);
-
   for(uint i=0;i<models[0]->gSize;i++) {
-    glBindBuffer(GL_ARRAY_BUFFER, models[0]->vbo[i]);
+    GLuint prg = models[0]->shaders[i]->program->program;
+    glUseProgram(prg); //TODO: using first shader and nothing else
+
+    GLuint uniformModel = glGetUniformLocation(prg, "model");
+    GLuint uniformView = glGetUniformLocation(prg, "view");
+    GLuint uniformProjection = glGetUniformLocation(prg, "projection");
+    GLuint uniformMvp = glGetUniformLocation(prg, "mvp");
+
+    glm::mat4 projection = glm::perspective(70.0f, ((float)display->screenWidth)/((float)display->screenHeight), 2.0f, 16384.0f);
+    glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+
+    glm::vec3 eye = glm::vec3(sin(r*0.33)*2048.0f,2048.0f,cos(r*0.33)*2048.0f);
+    glm::vec3 center = glm::vec3(1500.0f,0.0f,0.0f);
+    glm::vec3 up = glm::vec3(0.0f,0.0f,1.0f);
+
+    glm::mat4 view = glm::lookAt(eye, center, up);
+    glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(view));
+
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f,0.0f,0.0f));
+
+    glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+
+    glm::mat4 mvp = projection * view * model;
+
+    glUniformMatrix4fv(uniformMvp, 1, GL_FALSE, glm::value_ptr(mvp));
+
+    models[0]->shaders[i]->textures[0]->bind(prg, 0);
+
+
+    glBindBuffer(GL_ARRAY_BUFFER, models[0]->vbo[i]);;
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(

@@ -75,6 +75,8 @@ namespace tab {
   public:
     std::string file;
 
+    GtkWidget** entry;
+
     char* header = new char[4];
     uint gSize;
     std::string* shaders; uint* sSize;
