@@ -17,13 +17,28 @@ int main(int argc, char *argv[]) {
 }
 
 
-//TODO: refactor includes, focus on including apis to the cpp. Stuff like log.h can be re-re-refactored lol.
+//TODO: refactor includes
+
 //TODO: EXCEPTIONS
 
 //TODO: gls is a populatd namespace aaaaaaaaaaaaaaaaaaaaaaa
 
-//TODO: ADD SAVE TO MODEL EDITING
-
 //TODO: IMPROVE EDITOR
 
 //TODO: USE ACTUAL SHADERS IN FILE
+
+//TODO: Shadow mapping implemenation
+
+//TODO: Camera controls
+
+//TODO: Improve shader -> program bindings
+
+//TODO: Index program uniform bindings
+
+//TODO: Create safe render order and inbetween frames
+
+//TODO: Safe loading and unloading of map files
+
+//TODO: Command line/console
+
+//TODO: Proper deletion/unloading of files. Check for memory leaks.

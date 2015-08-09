@@ -51,7 +51,7 @@ public:
   virtual ~Engine() { }
 
   void load() {
-    game = new Game(this);
+    game = new Game(this, "test.scenario");
     gameLoaded = true;
   }
 
@@ -68,6 +68,10 @@ public:
         delete display;
 
         display = new Display(this); cmd::log("Display restarted ...");
+        load(); cmd::log("Game reloaded ...");
+      }
+      else if(recompSoft) {
+        recompSoft = false;
         load(); cmd::log("Game reloaded ...");
       }
       input->step();

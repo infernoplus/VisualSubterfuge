@@ -69,6 +69,7 @@ namespace tsn {
   //Typed Json object
   class TsonObject {
   public:
+    std::string path;
     std::string key;
     TsonObject(const std::string key);
     ~TsonObject();

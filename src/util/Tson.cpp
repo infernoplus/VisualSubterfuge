@@ -159,6 +159,7 @@
 
   //Typed Json object
   tsn::TsonObject::TsonObject(const std::string key) {
+    path = "";
     this->key=key;
   }
   tsn::TsonObject::~TsonObject() {
@@ -203,6 +204,7 @@
     bf << sf.rdbuf();
 
     tsn::TsonObject* obj = parse(removeSpace(bf.str()));
+    obj->path = file;
 
 //    //Test!
 //    std::cout << obj->getValue("textures")->getString() << "\n";
@@ -344,6 +346,7 @@
               key.str(std::string()); val.str(std::string());
             }
             else if(c == breakToken) {
+              ary.push_back(val.str());
               onNext = true;
             }
             else {

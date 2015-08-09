@@ -215,7 +215,7 @@ tab::Tab* Editor::getFocus(FileWidgetsCont* fwc) {
 }
 
 void Editor::recompSoft(Engine* e) {
-
+  e->recompSoft = true;
 }
 
 void Editor::recompHard(Engine* e) {

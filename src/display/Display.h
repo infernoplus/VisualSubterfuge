@@ -34,7 +34,7 @@ public:
 	Engine* engine;
 	Render *render;
 
-	bool tExit, tClosed;
+	bool tExit, tReady, tClosed;
 	SDL_Thread *thread;
 
 	SDL_Window* gWindow = NULL;

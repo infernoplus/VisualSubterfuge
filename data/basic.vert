@@ -9,10 +9,15 @@ out vec3 normal;
 
 uniform mat4 mvp;
 
-uniform float scale; //scale:1.0f
+uniform vec3 pos;
+uniform vec3 rot;
+uniform vec3 scl;
 
-void main() { 
+void main() {
 	texCoord = coord.xy;
 	normal = norm;
-	gl_Position = mvp * vec4(vert,1.0f); 
+	
+	vec4 v = vec4((vert*scl)+pos, 1.0f);
+	
+	gl_Position = mvp * v; 
 }

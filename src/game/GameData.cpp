@@ -17,6 +17,18 @@ GameData::~GameData() {
   //TODO: DELETE ALL CACHED DATA
 }
 
+tsn::TsonObject* GameData::getTson(std::string path) {
+  std::string full = game->engine->root + DATA + path;
+  for(uint i=0;i<tsons.size();i++) {
+    if(tsons[i]->path == full)
+      return tsons[i];
+  }
+  cmd::log("Loading tson file '" + full + "' ...");
+  tsn::TsonObject* t = tsn::openTson(full);
+  tsons.push_back(t);
+  return t;
+}
+
 gls::Model* GameData::getModel(std::string path) {
   std::string full = game->engine->root + DATA + path;
   for(uint i=0;i<models.size();i++) {
@@ -39,6 +51,7 @@ gls::Shader* GameData::getShader(std::string path) {
 
   std::ifstream in(full.c_str());
   if(!in.good()) {
+    cmd::log("## Warning - Could not find shader '" + path + "' ...");
     in.close();
     return getShader("basic.shader");
   }

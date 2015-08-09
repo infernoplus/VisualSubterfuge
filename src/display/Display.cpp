@@ -13,13 +13,18 @@ Display::Display(Engine* e) {
 
 	screenWidth = 1024; screenHeight = 768;
 
-	tExit = false; tClosed = false;
+	tReady = false; tExit = false; tClosed = false;
     thread = SDL_CreateThread(displayWrapper, "DisplayThread", this);
 
     if (NULL == thread) {
         printf("\nSDL_CreateThread failed: %s\n", SDL_GetError());
         return;
     }
+
+    for(int i=0;i<100&&!tReady;i++)
+      SDL_Delay(33);
+    if(!tReady)
+      cmd::log("Something fucked up and the SDL Display window was never created. Throw an actual exception/error!"); //TODO: WHAT HE SAID!
 }
 
 Display::~Display() {
@@ -37,6 +42,8 @@ int Display::display() {
 
 	int width; int height;
 	SDL_GetWindowSize(gWindow, &width, &height);
+
+	tReady = true;
 
 	while(!tExit) {
 		//Render scene

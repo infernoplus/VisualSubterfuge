@@ -8,30 +8,23 @@
 #include <game/Game.h>
 #include <Engine.hpp>
 
-Game::Game(Engine* e) {
+Game::Game(Engine* e, std::string path) {
   this->engine = e;
   data = new GameData(this);
 
-  test();
+  scenario = new Scenario(this, path);
+  bsp = new Bsp(this, scenario->bspPath);
 }
 
 Game::~Game() {
   delete data;
 }
 
-
-void Game::test() {
-  testUno = data->getModel("hang.gls");
-  testDos = data->getModel("basic.gls");
-}
-
-
 void Game::step() {
   //Literally nothing atm
 }
 
-std::vector<gls::Model*> Game::getDraw() {
-  std::vector<gls::Model*> toDraw;
-  toDraw.push_back(testUno); //toDraw.push_back(testDos);
-  return toDraw;
+std::vector<Instance*> Game::getDraw() {
+  //std::vector<gls::Model*> toDraw;
+  return bsp->getDraw();
 }

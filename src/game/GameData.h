@@ -10,10 +10,12 @@
 
 #include "fstream"
 
+#include "util/Tson.h"
 #include "display/model/Model.h"
 #include "display/shader/Shader.h"
 #include "display/shader/Program.h"
 #include "display/texture/Texture.h"
+#include "util/coordinate/Vert3f.h"
 
 #define DATA "/data/"
 
@@ -25,6 +27,7 @@ public:
   Game* game;
 
   //Game <Asset> cache
+  std::vector<tsn::TsonObject*> tsons;
   std::vector<gls::Model*> models;
   std::vector<gls::Shader*> shaders;
   std::vector<gls::Program*> programs;
@@ -35,7 +38,8 @@ public:
   GameData(Game* g);
   virtual ~GameData();
 
-  //Get <Asset> methods
+  //Get <Asset> methods'
+  tsn::TsonObject* getTson(std::string path);
   gls::Model* getModel(std::string path);
   gls::Shader* getShader(std::string path);
   gls::Program* getProgram(std::string path);
